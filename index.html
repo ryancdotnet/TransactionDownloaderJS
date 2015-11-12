@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<title>TransactionDownloaderJS</title>
+		<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/smoothness/jquery-ui.css"/>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="tdjs.js"></script>
+		<style>
+	
+		body
+		{
+			background-color: #161724;
+			color: #fff;
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+			font-size: 12px;
+		}
+		
+		ul.flowblock
+		{
+			list-style-type: none;
+		}
+		
+		ul.flowblock > li
+		{
+			display: inline-block;
+		}
+		
+		a
+		{
+			color: #36407A;
+		}
+		
+		li > a
+		{
+			text-decoration: none;
+			display: inline-block;
+			padding: 5px;
+			background-color: #36407A;
+			color: #fff;
+			margin-bottom: 5px;
+		}
+		
+		li > a:hover
+		{
+			background-color: #fff;
+			color: #161724;
+		}
+			
+		.lw { font-size: 60px; }
+		
+		.hidden-element
+		{
+			display: none;
+		}
+		
+		.button
+		{
+			cursor: pointer;
+			padding: 5px;
+			display:  inline-block;
+			border: 2px solid #36407A;
+			display: inline-block;
+			text-decoration: none;
+			text-align: left;
+			padding: 5px;
+			background-color: transparent;
+			margin: 4px 4px 4px 25px;
+			color: #fff;
+		}
+		
+		.button:hover
+		{
+			color: #34aced;
+			border: 2px solid #34aced;
+		}
+		
+		.field > div
+		{
+			display: inline-block;
+		}
+		
+		.help
+		{
+			position: relative;
+			padding: 0px 5px;
+			margin: 0;
+			border: 2px solid #36407A;
+			color: #fff;
+			width: 16px;
+			height: 16px;
+			cursor: pointer;
+			font-size: 16px;
+			display: inline-block;
+			vertical-align: bottom;
+		}
+		
+		.helptext
+		{
+			position: absolute;
+			z-index: -99;
+			opacity: 0;
+			background-color: #161724;
+			border: 2px solid #36407A;
+			width: 300px;
+			font-size: 12px;
+			padding: 10px;
+		}
+		
+		.help:hover > .helptext
+		{
+			z-index: 99;
+			opacity: 1;
+		}
+
+		</style>
+	</head>
+	<body>
+		<h1>TransactionDownloaderJS</h1>
+		<p>
+			Written by ryancdotnet<br>
+			<ul class="flowblock">
+				<li><a href="http://ryanc.net" target="_blank">ryanc.net</a><br></li>
+				<li><a href="http://twitter.com/ryancdotnet" target="_blank">Twitter Feed</a><br></li>
+				<li><a href="http://github.com/ryancdotnet" target="_blank">GitHub</a></li>
+			</ul>
+		</p>
+		<p>SECURITY NOTE:</p>
+		<ul>
+			<li>NO DATA IS STORED - This is all done in javascript in your browser. NO INFO is sent back to any servers (except for the request made to the bank directly).</li>
+			<li>I do suggest using a browser Private Session, just as a good practice when accessing your online banking.</li>
+		</ul>
+		<p>SUPPORTED BANKS:</p>
+		<ul>
+			<li>Only supports USBank at this time.</li>
+		</ul>
+		<h2>Input</h2>
+		<table>
+			<tr>
+			<td>
+				Enter (paste) Accounts JSON:
+			</td>
+			<td>
+				<input id="accountsInput" type="text" />
+				<div class="help">?
+				<div class="helptext">
+					First, find out the indexes of your accounts. Then create a JSON array of them, with each position indicating an account.
+					<br>
+					<br>
+					Example:<br>
+					["","Checking - 1234","Credit Card - 4567"]<br>
+					<br>
+					Where:<br>
+					<ul>
+					<li>0:(nothing, used only to properly index other accounts)</li>
+					<li>1: Checking - 1234</li>
+					<li>2: Credit Card - 4567</li>
+					</ul>
+				</div>
+				</div>
+			</td>
+			</tr>
+			<tr>
+			<td>
+				Enter SessionKey:
+			</td>
+			<td>
+				<input id="sessionInput" type="text" />
+				<div class="help">?
+				<div class="helptext">
+					Once you log into your USBank account online, your SessionKey is in the URL. Look for this:<br>
+					<br>
+					...af(SESSION_KEY_HERE)...<br>
+					<br>
+					Your SessionKey is a garble of characters. Copy/paste it.
+				</div>
+				</div>
+			</td>
+			</tr>
+			<tr>
+			<td>
+				From Date:
+			</td>
+			<td>
+				<input type="text" id="fromDatePicker" class="datepicker">
+			</td>
+			</tr>
+			<tr>
+			<td>
+				To Date:
+			</td>
+			<td>
+				<input type="text" id="toDatePicker" class="datepicker">
+			</td>
+			</tr>
+			<tr>
+			<td>
+				Download Interval (seconds):
+			</td>
+			<td>
+			<input type="text" id="dlInterval" value="7" />
+			<div class="help">?
+				<div class="helptext">
+					Determines how many seconds to wait in-between downloads.<br>
+					<br>
+					You may want to adjust this if your download speed is too slow (or you have large numbers of transactions per account.)<br>
+					<br>
+					Minimum is 3 seconds. (You're welcome USBank!) :)
+				</div>
+				</div>
+			</td>
+			</tr>
+		</table>
+		<div id="submitButton" class="button">Submit</div>
+		<br><br>
+		<h2>Output</h2>
+			<div id="autoDownloadButton" class="button">Auto-Download All</div>
+			<div id="clearButton" class="button">Clear</div>
+		<table id="processingPanel">
+			<tbody>
+			<tr class="account-template hidden-element">
+			<td class="field accountName">
+				<div class="name">Account Name</div>
+				<div class="data"></div>
+			</td>
+			<td class="field accountIndex">
+				<div class="name">I#</div>
+				<div class="data"></div>
+			</td>
+			<td class="field startDate">
+				<div class="name">From</div>
+				<div class="data"></div>
+			</td>
+			<td class="field endDate">
+				<div class="name">To</div>
+				<div class="data"></div>
+			</td>
+			<td class="field download">
+				<a href="#" download="">Manual Download</a></div>
+			</td>
+			<td class="field status">
+				<div class="name">Status</div>
+				<div class="data">Ready</div>
+			</td>
+			</tr>
+			</tbody>
+		</table>
+	</body>
+</html>
